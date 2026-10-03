@@ -29,5 +29,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: PoonClient-JAR
-          path: PoonClient/build/libs/*.jar
+          path: build/libs/*.jar
           if-no-files-found: error
