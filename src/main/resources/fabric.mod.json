@@ -2,11 +2,13 @@
   "schemaVersion": 1,
   "id": "poonclient",
   "version": "${version}",
-  "name": "Poon Client",
-  "description": "A modular client-side utility mod for Minecraft 1.21.11.",
-  "authors": ["Khoa / Poon Client"],
+  "name": "Poon Client Enhanced",
+  "description": "An independent client-side utility, visual helper, and HUD mod for Minecraft 1.21.11.",
+  "authors": ["Poon Client"],
   "environment": "client",
-  "entrypoints": { "client": ["com.poon.client.PoonClient"] },
+  "entrypoints": {
+    "client": ["com.poon.client.PoonClient"]
+  },
   "depends": {
     "fabricloader": ">=0.18.1",
     "minecraft": "~1.21.11",
