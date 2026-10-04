@@ -1,54 +1,35 @@
-@echo off
-setlocal EnableExtensions
-cd /d "%~dp0"
+name: Build Poon Client JAR
 
-where java >nul 2>nul
-if errorlevel 1 (
-  echo [ERROR] Chua tim thay Java. Hay cai JDK 21 va thu lai.
-  echo Neu khong muon cai Java, hay build bang GitHub Actions theo README.md.
-  pause
-  exit /b 1
-)
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
 
-for /f "tokens=3" %%V in ('java -version 2^>^&1 ^| findstr /i "version"') do set "JAVA_VER=%%~V"
-echo Java hien tai: %JAVA_VER%
-echo.
+permissions:
+  contents: read
 
-set "GRADLE_VERSION=9.2.1"
-set "TOOLS_DIR=%LOCALAPPDATA%\PoonClientBuild"
-set "GRADLE_HOME=%TOOLS_DIR%\gradle-%GRADLE_VERSION%"
-set "GRADLE_ZIP=%TOOLS_DIR%\gradle-%GRADLE_VERSION%-bin.zip"
-
-if not exist "%GRADLE_HOME%\bin\gradle.bat" (
-  if not exist "%TOOLS_DIR%" mkdir "%TOOLS_DIR%"
-  echo Dang tai Gradle %GRADLE_VERSION%... Can ket noi Internet.
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; Invoke-WebRequest -Uri 'https://services.gradle.org/distributions/gradle-%GRADLE_VERSION%-bin.zip' -OutFile '%GRADLE_ZIP%'"
-  if errorlevel 1 (
-    echo [ERROR] Khong tai duoc Gradle. Kiem tra ket noi Internet va chay lai.
-    pause
-    exit /b 1
-  )
-  echo Dang giai nen Gradle...
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "Expand-Archive -LiteralPath '%GRADLE_ZIP%' -DestinationPath '%TOOLS_DIR%' -Force"
-  if errorlevel 1 (
-    echo [ERROR] Khong giai nen duoc Gradle.
-    pause
-    exit /b 1
-  )
-)
-
-echo.
-echo Dang build Poon Client. Lan dau can Internet de tai Minecraft/Fabric dependencies...
-call "%GRADLE_HOME%\bin\gradle.bat" --no-daemon clean build
-if errorlevel 1 (
-  echo.
-  echo [FAILED] Build that bai. Hay chup lai toan bo thong bao loi gui cho nguoi ho tro.
-  pause
-  exit /b 1
-)
-
-echo.
-echo [SUCCESS] Build hoan tat. Cac file JAR nam trong:
-echo %CD%\build\libs\
-explorer "%CD%\build\libs"
-pause
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.1'
+      - name: Build mod
+        run: gradle --no-daemon clean build
+      - name: Upload JAR files
+        uses: actions/upload-artifact@v4
+        with:
+          name: PoonClient-JAR
+          path: |
+            build/libs/*.jar
+            !build/libs/*-sources.jar
+          if-no-files-found: error
