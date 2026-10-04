@@ -154,10 +154,6 @@ public final class PoonClient implements ClientModInitializer {
                 client.player.swing(InteractionHand.MAIN_HAND);
             }
 
-            if (client.debugRenderer != null && client.debugRenderer.renderHitBoxes != hitboxes) {
-                client.debugRenderer.toggleRenderHitBoxes();
-            }
-
             if (++tickCounter % 10 == 0) {
                 updateEntityGlow(client);
                 refreshHudCache(client);
