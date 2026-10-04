@@ -5,11 +5,12 @@ cd /d "%~dp0"
 where java >nul 2>nul
 if errorlevel 1 (
   echo [ERROR] Chua tim thay Java. Hay cai JDK 21 va thu lai.
+  echo Neu khong muon cai Java, hay build bang GitHub Actions theo README.md.
   pause
   exit /b 1
 )
 
-for /f "tokens=3" %%V in ('java -version 2^>^&1 ^| findstr /i "version"') do set JAVA_VER=%%~V
+for /f "tokens=3" %%V in ('java -version 2^>^&1 ^| findstr /i "version"') do set "JAVA_VER=%%~V"
 echo Java hien tai: %JAVA_VER%
 echo.
 
