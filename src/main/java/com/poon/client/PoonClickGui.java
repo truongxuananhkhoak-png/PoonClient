@@ -2,6 +2,8 @@ package com.poon.client;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -95,7 +97,10 @@ public final class PoonClickGui extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (button == 0) {
             if (mouseY >= panelY && mouseY <= panelY + 43 && mouseX >= panelX && mouseX <= panelX + panelW) {
                 dragging = true; dragX = mouseX - panelX; dragY = mouseY - panelY; return true;
@@ -125,7 +130,7 @@ public final class PoonClickGui extends Screen {
             }
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private boolean insideRow(double x, double y, int offsetY) {
@@ -134,28 +139,29 @@ public final class PoonClickGui extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (dragging && button == 0) {
-            panelX = Math.max(0, Math.min(width - panelW, (int) (mouseX - this.dragX)));
-            panelY = Math.max(0, Math.min(height - panelH, (int) (mouseY - this.dragY)));
+    public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        if (dragging && event.button() == 0) {
+            panelX = Math.max(0, Math.min(width - panelW, (int) (event.x() - this.dragX)));
+            panelY = Math.max(0, Math.min(height - panelH, (int) (event.y() - this.dragY)));
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (button == 0) dragging = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        if (event.button() == 0) dragging = false;
+        return super.mouseReleased(event);
     }
 
     @Override public boolean isPauseScreen() { return false; }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT) {
             onClose(); return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 }
